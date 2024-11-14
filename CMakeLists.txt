@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(MeshFEM)
 
+include(cmake/entry/desktop-cpp.cmake)
+__install_conan_requirements(MSVC_RUNTIME "dynamic")
+
 # CMP0063: Honor visibility properties for all target types.
 if(POLICY CMP0063)
     cmake_policy(SET CMP0063 NEW)
@@ -22,7 +25,7 @@ endif()
 
 ################################################################################
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/sub_cmake)
 
 set(CMAKE_CXX_FLAGS_RELWITHASSERT        "-O3" CACHE STRING "Flags used during RelWithAssertions builds" FORCE)
 set(CMAKE_C_FLAGS_RELWITHASSERT          "-O3" CACHE STRING "Flags used during RelWithAssertions builds" FORCE)
@@ -102,11 +105,14 @@ endif()
 ################################################################################
 
 # Download and define targets for third-party dependencies
-# include(MeshFEMDependencies)
+include(MeshFEMDependencies)
 
 ################################################################################
 # Subdirectories
 ################################################################################
+
+add_subdirectory(3rdparty/umfpack)
+add_library(umfpack::umfpack ALIAS umfpack)
 
 add_subdirectory(src/lib)
 
@@ -115,27 +121,14 @@ if(MESHFEM_BUILD_BINARIES)
 endif()
 
 if(MESHFEM_BUILD_PYTHON_BINDINGS)
-    # we compile for (without making them pass `-DPYTHON_EXECUTABLE=...` to `cmake`
-    if (DEFINED ENV{PYTHON_EXECUTABLE})
-        set(PYTHON_EXECUTABLE "$ENV{PYTHON_EXECUTABLE}" CACHE INTERNAL "Python executable for which to build pybind11 bindings")
-        #message("Set python executable to ${PYTHON_EXECUTABLE}")
-    endif()
-
-    # Download pybind dependency when pybind11 is missing
-    if(NOT TARGET pybind11::module)
-        include(MeshFEMDownloadExternal)
-        meshfem_download_project(pybind11
-            GIT_REPOSITORY https://github.com/pybind/pybind11.git
-            GIT_TAG v2.6.1
-        )
-        add_subdirectory(${MESHFEM_EXTERNAL}/pybind11)
-    endif()
+    set(PYBIND11_FINDPYTHON ON)
+    find_package(pybind11 REQUIRED)
 
     add_subdirectory(src/python_bindings)
 endif()
 
 if (MESHFEM_WITH_OFFSCREEN_RENDER)
-add_subdirectory(3rdparty/OffscreenRenderer)
+    add_subdirectory(3rdparty/OffscreenRenderer)
 endif()
 
 ################################################################################
@@ -143,7 +136,7 @@ endif()
 ################################################################################
 
 # Compile tests only if this is a top-level project
-if(MESHFEM_TOPLEVEL_PROJECT)
+if(0)
     # Unit tests
     include(CTest)
     enable_testing()

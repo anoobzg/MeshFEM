@@ -14,7 +14,7 @@ if (NOT USE_OSMESA)
         find_package(OpenGL REQUIRED)
     else()
         set(OpenGL_GL_PREFERENCE "GLVND") # Prefer modern GL driver, silencing cmake warning
-        find_package(OpenGL COMPONENTS OpenGL EGL)
+        find_package(OpenGL COMPONENTS OpenGL)
     endif()
 endif()
 if (NOT OPENGL_FOUND)
@@ -44,6 +44,8 @@ if ((TARGET GLEW::GLEW) AND (OPENGL_FOUND OR (TARGET OSMesa::OSMesa)))
         if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             # Default to CGL on Mac
             target_compile_definitions(offscreen_renderer INTERFACE -DUSE_CGL)
+        elseif(WIN32)
+            target_link_libraries(offscreen_renderer INTERFACE opengl::opengl)
         else()
             # Default to EGL on Linux
             target_compile_definitions(offscreen_renderer INTERFACE -DUSE_EGL)
