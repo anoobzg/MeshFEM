@@ -102,7 +102,7 @@ endif()
 ################################################################################
 
 # Download and define targets for third-party dependencies
-include(MeshFEMDependencies)
+# include(MeshFEMDependencies)
 
 ################################################################################
 # Subdirectories
