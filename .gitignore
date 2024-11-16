@@ -5,3 +5,5 @@ build_*
 __pycache__
 .ipynb_checkpoints
 python/MeshFEM
+.vscode/
+out/

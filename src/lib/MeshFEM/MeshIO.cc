@@ -415,9 +415,48 @@ void MeshIO_STL::save(ostream &os, const vector<Vertex> &nodes,
     }
 }
 
-[[ noreturn ]] MeshType MeshIO_STL::load(istream &/* is */, vector<Vertex> &/* nodes */,
-                          vector<Element> &/* elements */, MeshType /* t */) {
-    throw std::runtime_error("STL file import unsupported");
+[[ noreturn ]] MeshType MeshIO_STL::load(istream &is, vector<Vertex> & nodes,
+                          vector<Element> &elements, MeshType /* t */) {
+    nodes.clear(), elements.clear();
+    
+    struct STLHeader {
+        char header[80];
+        uint32_t n_triangles;
+    };
+    
+    struct STLTriangle {
+        uint16_t facet_attribute;
+        float normal[3];
+        uint16_t unused;
+        float vertices[3][3];
+        uint16_t attribute;
+    };
+
+    STLHeader header;
+    is.read(reinterpret_cast<char*>(&header), sizeof(STLHeader));
+ 
+    std::vector<STLTriangle> triangles;
+    triangles.resize(header.n_triangles);
+    is.read(reinterpret_cast<char*>(triangles.data()), sizeof(STLTriangle) * header.n_triangles);
+ 
+    nodes.reserve(header.n_triangles * 3);
+    elements.reserve(header.n_triangles);
+    int index = 0;
+    for(const STLTriangle& triangle : triangles)
+    {
+        Element element;
+        element.push_back(index++);
+        element.push_back(index++);
+        element.push_back(index++);
+        elements.push_back(element);
+
+        for(int i = 0; i < 3; ++i)
+        {
+            IOVertex v(triangle.vertices[i][0], triangle.vertices[i][1], triangle.vertices[i][2]);
+            nodes.push_back(v);
+        }
+    }
+    return MESH_TRI;
 }
 
 void MeshIO_POLY::save(ostream &os, const vector<Vertex> &nodes,

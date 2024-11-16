@@ -149,6 +149,8 @@ target_link_libraries(${PROJECT_NAME}
         warnings::all
 )
 
+__modify_target(${PROJECT_NAME})
+
 if(MESHFEM_WITH_TBB)
     target_compile_definitions(${PROJECT_NAME} PUBLIC -DMESHFEM_WITH_TBB)
     target_link_libraries(${PROJECT_NAME}      PUBLIC tbb::tbb)
