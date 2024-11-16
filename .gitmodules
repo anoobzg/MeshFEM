@@ -1,3 +1,6 @@
 [submodule "cmake"]
 	path = cmake
 	url = https://gitee.com/tjourney/cmake.git
+[submodule "3rdparty/suitesparse-metis-for-windows"]
+	path = 3rdparty/suitesparse-metis-for-windows
+	url = https://github.com/anoobzg/suitesparse-metis-for-windows.git

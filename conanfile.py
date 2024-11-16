@@ -9,7 +9,7 @@ class PALRecipe(ConanFile):
         self.requires("catch2/2.13.10")
         self.requires("nlohmann_json/3.4.0")
         self.requires("optional-lite/3.4.0")
-        self.requires("spectra/1.0.1")
+        self.requires("spectra/0.8.1")
         self.requires("onetbb/2021.10.0")
         self.requires("boost/1.83.0")
         # self.requires("cereal/1.3.0")

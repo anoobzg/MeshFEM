@@ -111,7 +111,7 @@ include(MeshFEMDependencies)
 # Subdirectories
 ################################################################################
 
-add_subdirectory(3rdparty/umfpack)
+add_subdirectory(3rdparty/suitesparse-metis-for-windows/)
 add_library(umfpack::umfpack ALIAS umfpack)
 
 add_subdirectory(src/lib)
